@@ -2,25 +2,26 @@
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.ListIterator;
 
 
 public class Priority {
     ArrayList<Process> processes;
     
-    public Priority(int[] burst, int[] arrivalTime,int[] priority){
+    public Priority(int[] burst,int[] priority){
         processes = new ArrayList<>();
         
         for(int i=0;i<burst.length;i++){
-            processes.add(new Process(burst[i],priority[i], i));
+            processes.add(new Process(burst[i], 0, priority[i], i));
         }
         
         Collections.sort(processes, new SortByPriority());
         completeTable();
+        
+        Collections.sort(processes, new SortByID());
         Process.displayTable(processes);
     }
     
-    public void completeTable(){
+    public final void completeTable(){
         int completion = 0;
 
         Iterator it = processes.iterator();
@@ -40,17 +41,10 @@ public class Priority {
 
     }
     
-    public void displayList(ArrayList<Process> list){
-        for(Process x: processes){
-            System.out.printf("%d\t%d\t%d\t%d\n",x.getID(),x.getPriority(),x.getBurst(),x.getCompletion());
-        }
-    }
-    
     public static void main(String[] args) {
         int[] burst = {10,5,8};
-        int[] arrival = {0,0,0};
         int[] priority = {2,0,1};
-        Priority x = new Priority(burst, arrival, priority);
+        Priority x = new Priority(burst, priority);
 
 
 

@@ -1,4 +1,3 @@
-
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -69,7 +68,7 @@ public class Processes extends JFrame implements ActionListener{
         int[] arrivalTime = new int[procNum];
         
         for(int i=0;i<procNum;i++){
-            arrivalTime[i] = Integer.parseInt(arrivalFld[i].getText());
+            arrivalTime[i] = Integer.parseInt(burstFld[i].getText());
         }
         
         return arrivalTime;
@@ -78,6 +77,8 @@ public class Processes extends JFrame implements ActionListener{
     @Override
     public void actionPerformed(ActionEvent e){
         if(e.getSource() == enterBtn){
+            GUI x = new GUI(burstFld.length);
+
             this.dispose();
         }
     }

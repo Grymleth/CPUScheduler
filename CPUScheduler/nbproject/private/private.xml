@@ -3,13 +3,12 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/aevan/Documents/NetBeansProjects/CPUScheduler/src/SortByArrival.java</file>
-            <file>file:/C:/Users/aevan/Documents/NetBeansProjects/CPUScheduler/src/SortByPriority.java</file>
-            <file>file:/C:/Users/aevan/Documents/NetBeansProjects/CPUScheduler/src/Process.java</file>
-            <file>file:/C:/Users/aevan/Documents/NetBeansProjects/CPUScheduler/src/RoundRobin.java</file>
-            <file>file:/C:/Users/aevan/Documents/NetBeansProjects/CPUScheduler/src/SortByID.java</file>
-            <file>file:/C:/Users/aevan/Documents/NetBeansProjects/CPUScheduler/src/Priority.java</file>
-            <file>file:/C:/Users/aevan/Documents/NetBeansProjects/CPUScheduler/src/RoundRobinT.java</file>
+            <file>file:/C:/Users/aevan/Desktop/Algorithms/Proj/CPUScheduler/CPUScheduler/src/Processes.java</file>
+            <file>file:/C:/Users/aevan/Desktop/Algorithms/Proj/CPUScheduler/CPUScheduler/src/RoundRobin.java</file>
+            <file>file:/C:/Users/aevan/Desktop/Algorithms/Proj/CPUScheduler/CPUScheduler/src/SortByArrival.java</file>
+            <file>file:/C:/Users/aevan/Desktop/Algorithms/Proj/CPUScheduler/CPUScheduler/src/Process.java</file>
+            <file>file:/C:/Users/aevan/Desktop/Algorithms/Proj/CPUScheduler/CPUScheduler/src/Priority.java</file>
+            <file>file:/C:/Users/aevan/Desktop/Algorithms/Proj/CPUScheduler/CPUScheduler/src/GUI.java</file>
         </group>
     </open-files>
 </project-private>

@@ -16,17 +16,16 @@ public class RoundRobin {
         ganttBar = new ArrayList<>();
         
         for(int i=0;i<burst.length;i++){
-            processes.add(new Process(burst[i], i));
+            processes.add(new Process(burst[i], 0, i));
         }
         this.quantum=quantum;
 
-        gantt();
+        completeGantt();
         completeTable();
         
-        Process.displayTable(processes);
     }
     
-    public final void gantt(){
+    public final void completeGantt(){
         int decrement;
         int repeats;
         int completion = 0;
@@ -61,8 +60,9 @@ public class RoundRobin {
                 completion+=decrement;
                 obj.decrement(decrement);
 
-                obj = new Process(decrement,obj.getID());
+                obj = new Process(decrement, 0, obj.getID());
                 obj.setCompletion(completion);
+                System.out.println(obj.getCompletion());
                 ganttBar.add(obj);
 
                 System.out.println("completion: :"+obj.getCompletion());
@@ -112,17 +112,10 @@ public class RoundRobin {
             return 1;
         }
     }
-    
-    public void displayList(ArrayList<Process> list){
-        for(Process x: processes){
-            System.out.printf("%d\t%d\t%d\t%d\n",x.getID(),x.getPriority(),x.getBurst(),x.getCompletion());
-        }
-    }
-
-    
+  
     public static void main(String[] args) {
         int[] burst = {3,4,3};
-        RoundRobin x = new RoundRobin(burst, 1);
+        RoundRobin x = new RoundRobin(burst, 4);
     }
 
     public ArrayList<Process> shit(){
