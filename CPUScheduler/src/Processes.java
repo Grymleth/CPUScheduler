@@ -77,7 +77,7 @@ public class Processes extends JFrame implements ActionListener{
     @Override
     public void actionPerformed(ActionEvent e){
         if(e.getSource() == enterBtn){
-            GUI x = new GUI(burstFld.length);
+            GUI x = new GUI();
 
             this.dispose();
         }

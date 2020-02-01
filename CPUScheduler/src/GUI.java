@@ -36,9 +36,6 @@ public class GUI extends JFrame implements ActionListener{
     private ArrayList<JTextField> burstFld,
                                   arrivalFld,
                                   prioFld;
-    private JLabel burstLbl,
-                   arrivalLbl, 
-                   prioLbl;
     
     private JTextField rrQnum;
     
@@ -48,12 +45,12 @@ public class GUI extends JFrame implements ActionListener{
                     PreBtn,
                     prioBtn,
                     proceedBtn,
-                    addBtn;
+                    addBtn,
+                    removeBtn;
     
     private CardLayout outputCard,
                         inputCard,
                         varCard;
-                       
     
     private JPanel mainPanel,
                     prioPanel,
@@ -74,6 +71,9 @@ public class GUI extends JFrame implements ActionListener{
                     NonPreBorder,
                     rrBorder,
                     prioBorder,
+                    burstFldBorder,
+                    arrivalFldBorder,
+                    prioFldBorder,
                     fcfsChBorder,
                     rrChBorder,
                     prioChBorder,
@@ -91,7 +91,6 @@ public class GUI extends JFrame implements ActionListener{
     private DefaultTableModel tableModel,
                               prioModel;
                                 
-    
     private JScrollPane genSp,
                         prioOutSp,
                         burstFldSp,
@@ -111,8 +110,8 @@ public class GUI extends JFrame implements ActionListener{
     private static final int ROUND_ROBIN = 3;
     private static final int PRIO = 4;
     
-    public GUI(int num){
-        super("Processes");
+    public GUI(){
+        super("CPU Scheduler");
         int[] burst = {3,4,3};
         RoundRobin schedule = new RoundRobin(burst, 4);
         ArrayList<Process> list = schedule.processes;
@@ -122,7 +121,7 @@ public class GUI extends JFrame implements ActionListener{
         
         Process.displayTable(list);
         
-        this.num = num;
+        this.num = 0;
         
         this.setLayout(new GridLayout(3,1));
         
@@ -132,6 +131,9 @@ public class GUI extends JFrame implements ActionListener{
         PreBorder = BorderFactory.createTitledBorder(border1,"Preemptive");
         rrBorder = BorderFactory.createTitledBorder(border1,"Round Robin");
         prioBorder = BorderFactory.createTitledBorder(border1,"Priority");
+        burstFldBorder = BorderFactory.createTitledBorder(border1,"Burst Time");
+        arrivalFldBorder = BorderFactory.createTitledBorder(border1,"Arrival Time");
+        prioFldBorder = BorderFactory.createTitledBorder(border1,"Priority");
         
         table = new JTable();
         prioTable = new JTable();
@@ -156,7 +158,8 @@ public class GUI extends JFrame implements ActionListener{
         PreBtn = new JButton("Preemptive");
         prioBtn = new JButton("Priority");
         proceedBtn = new JButton("PROCEED");
-        addBtn = new JButton("ADD PROCESS");
+        addBtn = new JButton("ADD");
+        removeBtn = new JButton("REMOVE");
         
         mainPanel = new JPanel(outputCard);
         prioPanel =  new JPanel();
@@ -177,9 +180,6 @@ public class GUI extends JFrame implements ActionListener{
         arrivalFldSp = new JScrollPane(arrivalPanel);
         prioFldSp = new JScrollPane(prioFldPanel);
         
-        burstLbl = new JLabel("Burst Time");
-        arrivalLbl = new JLabel("Arrival Time");
-        prioLbl = new JLabel("Priority");
         label = new JLabel("test");
         label2 = new JLabel("test2");
         rrQLbl = new JLabel("Quantum Time: ");
@@ -206,28 +206,22 @@ public class GUI extends JFrame implements ActionListener{
         
         add(inputPanel);
             inputPanel.add(burstFldSp);
-                burstConstraints.gridx=0;
-                burstConstraints.gridy=0;
-                burstPanel.add(burstLbl,burstConstraints);
+                burstFldSp.setBorder(burstFldBorder);
             inputPanel.add(varPanel);
                 varPanel.add(arrivalFldSp, "ARRIVAL");
-                    arrivalConstraints.gridx=0;
-                    arrivalConstraints.gridy=0;
-                    arrivalPanel.add(arrivalLbl,arrivalConstraints);
+                    arrivalFldSp.setBorder(arrivalFldBorder);
                 varPanel.add(prioFldSp, "PRIORITY");
-                    prioConstraints.gridx=0;
-                    prioConstraints.gridy=0;
-                    prioFldPanel.add(prioLbl,prioConstraints);
+                    prioFldSp.setBorder(prioFldBorder);
                 varPanel.add(quantumPanel, "BLANK");
                     quantumPanel.add(rrQLbl);
                     quantumPanel.add(rrQnum);
                 inputPanel.add(addPanel);
-                    addPanel.add(addBtn);
-                    
+                    addPanel.add(addBtn);   
+                    addPanel.add(removeBtn);
                 
         add(mainPanel,BorderLayout.SOUTH);
             mainPanel.add(tablePanel,"Table");
-                tablePanel.setBorder(fcfsBorder);
+                tablePanel.setBorder(rrBorder);
                 tablePanel.add(genSp);
             mainPanel.add(prioPanel,"Prio");
                 prioPanel.setBorder(prioBorder);
@@ -243,6 +237,7 @@ public class GUI extends JFrame implements ActionListener{
         prioBtn.addActionListener(this);
         proceedBtn.addActionListener(this);
         addBtn.addActionListener(this);
+        removeBtn.addActionListener(this);
         
         setLayout(new FlowLayout());
         setSize(600,700);
@@ -259,23 +254,17 @@ public class GUI extends JFrame implements ActionListener{
         System.out.println("gridx: " + gbc.gridx);
         System.out.println("gridy: " + gbc.gridy);
         panel.add(field,gbc);
-        pack();
+        panel.revalidate();
+        panel.repaint();
     }
     
-    private void layoutField(JLabel label, JTextField field, JPanel panel){
-        panel.setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        
-        int x=0,y=0;
+    private void removeField(JTextField field, JPanel panel, GridBagConstraints gbc){
+        panel.remove(field);
         gbc.gridx=0;
-        gbc.gridy=0;
-        panel.add(label);
-
-        gbc.gridy=1;
-        panel.add(field,gbc);
+        gbc.gridy--;
         panel.revalidate();
-        inputPanel.revalidate();
-        this.validate();
+        panel.repaint();
+        pack();
     }
         
     private void addChart(JPanel panel, ArrayList<Process> process, GridBagConstraints gbc){
@@ -295,7 +284,7 @@ public class GUI extends JFrame implements ActionListener{
         for(int i=0;it.hasNext();i++){
             obj = (Process)it.next();
             
-            chart[i] = new JLabel("P"+(obj.getID()+1));
+            chart[i] = new JLabel("P"+(obj.getID()));
             compl += obj.getBurst()+obj.getArrival();
             
             gbc.gridx=i;
@@ -328,8 +317,7 @@ public class GUI extends JFrame implements ActionListener{
             for(int j=1;j<6;j++){
                 tableModel.setValueAt(list[j], i, j);
             }
-        }
-                
+        }    
     }
     
     private void priority(){
@@ -382,16 +370,21 @@ public class GUI extends JFrame implements ActionListener{
             addField(burstFld.get(num), burstPanel, burstConstraints);
             addField(arrivalFld.get(num), arrivalPanel, arrivalConstraints);
             addField(prioFld.get(num), prioFldPanel, prioConstraints);
-            String[] blank1 = new String[6];
-            String[] blank2 = new String[6];
-            tableModel.insertRow(num, blank1);
-            prioModel.insertRow(num, blank2);
+            tableModel.insertRow(num, new String[6]);
+            prioModel.insertRow(num, new String[7]);
             num++;
+        }
+        else if(e.getSource()==removeBtn){
+            removeField(burstFld.get(num-1), burstPanel, burstConstraints);
+            removeField(arrivalFld.get(num-1), arrivalPanel, arrivalConstraints);
+            removeField(prioFld.get(num-1), prioFldPanel, prioConstraints);
+            
+            num--;
         }
     }
     
     public static void main(String[] args) {
-        GUI x = new GUI(0);
+        GUI x = new GUI();
                 
     }
     
