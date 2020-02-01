@@ -9,6 +9,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -48,12 +49,14 @@ public class GUI extends JFrame implements ActionListener{
                     addBtn,
                     removeBtn;
     
-    private CardLayout outputCard,
-                        inputCard,
-                        varCard;
+    private CardLayout inputCard,
+                       varCard,
+                       tableCard;
     
     private JPanel mainPanel,
-                    prioPanel,
+                    tablePanel,
+                    generalTablePanel,
+                    prioTablePanel,
                     inputPanel,
                     burstPanel,
                     varPanel,
@@ -62,7 +65,6 @@ public class GUI extends JFrame implements ActionListener{
                     buttonPanel,
                     quantumPanel,
                     chartPanel,
-                    tablePanel,
                     addPanel;
     
     private Border border1,
@@ -146,9 +148,9 @@ public class GUI extends JFrame implements ActionListener{
         table.setModel(tableModel);
         prioTable.setModel(prioModel);
         
-        outputCard = new CardLayout();
         inputCard = new CardLayout();
         varCard = new CardLayout();
+        tableCard = new CardLayout();
         
         rrQnum = new JTextField();
         
@@ -161,8 +163,10 @@ public class GUI extends JFrame implements ActionListener{
         addBtn = new JButton("ADD");
         removeBtn = new JButton("REMOVE");
         
-        mainPanel = new JPanel(outputCard);
-        prioPanel =  new JPanel();
+        mainPanel = new JPanel();
+        tablePanel = new JPanel(tableCard);
+        prioTablePanel =  new JPanel();
+        generalTablePanel = new JPanel();
         buttonPanel = new JPanel();
         inputPanel = new JPanel(new GridLayout(1,3));
         burstPanel = new JPanel(new GridBagLayout());
@@ -170,8 +174,7 @@ public class GUI extends JFrame implements ActionListener{
         arrivalPanel = new JPanel(new GridBagLayout());
         prioFldPanel = new JPanel(new GridBagLayout());
         quantumPanel = new JPanel();
-        chartPanel = new JPanel();
-        tablePanel = new JPanel();
+        chartPanel = new JPanel(new GridBagLayout());
         addPanel = new JPanel();
         
         genSp = new JScrollPane(table);
@@ -212,7 +215,7 @@ public class GUI extends JFrame implements ActionListener{
                     arrivalFldSp.setBorder(arrivalFldBorder);
                 varPanel.add(prioFldSp, "PRIORITY");
                     prioFldSp.setBorder(prioFldBorder);
-                varPanel.add(quantumPanel, "BLANK");
+                varPanel.add(quantumPanel, "QUANTUM");
                     quantumPanel.add(rrQLbl);
                     quantumPanel.add(rrQnum);
                 inputPanel.add(addPanel);
@@ -220,12 +223,13 @@ public class GUI extends JFrame implements ActionListener{
                     addPanel.add(removeBtn);
                 
         add(mainPanel,BorderLayout.SOUTH);
-            mainPanel.add(tablePanel,"Table");
-                tablePanel.setBorder(rrBorder);
-                tablePanel.add(genSp);
-            mainPanel.add(prioPanel,"Prio");
-                prioPanel.setBorder(prioBorder);
-                prioPanel.add(prioOutSp);
+            mainPanel.add(tablePanel);
+                tablePanel.setBorder(fcfsBorder);
+                tablePanel.add(generalTablePanel,"GENERAL_TABLE");
+                    generalTablePanel.add(genSp);
+                tablePanel.add(prioTablePanel, "PRIO_TABLE");
+                    prioTablePanel.add(prioOutSp);
+            mainPanel.add(chartPanel);
                 
         add(proceedBtn);
                 
@@ -265,9 +269,10 @@ public class GUI extends JFrame implements ActionListener{
         panel.revalidate();
         panel.repaint();
         pack();
+        
     }
         
-    private void addChart(JPanel panel, ArrayList<Process> process, GridBagConstraints gbc){
+    private void addChart(JPanel panel, ArrayList<Process> process){
         int size = process.size();
         int compl = 0;
 
@@ -277,6 +282,8 @@ public class GUI extends JFrame implements ActionListener{
         Border b1 = BorderFactory.createLineBorder(Color.BLACK);
         Border border;
         
+        panel.removeAll();
+        GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill=0;
         gbc.gridheight=1;
         gbc.gridwidth=1;
@@ -284,7 +291,7 @@ public class GUI extends JFrame implements ActionListener{
         for(int i=0;it.hasNext();i++){
             obj = (Process)it.next();
             
-            chart[i] = new JLabel("P"+(obj.getID()));
+            chart[i] = new JLabel("P"+(obj.getID()+1));
             compl += obj.getBurst()+obj.getArrival();
             
             gbc.gridx=i;
@@ -318,6 +325,9 @@ public class GUI extends JFrame implements ActionListener{
                 tableModel.setValueAt(list[j], i, j);
             }
         }    
+        
+        addChart(chartPanel, schedule.ganttBar);
+        
     }
     
     private void priority(){
@@ -333,31 +343,38 @@ public class GUI extends JFrame implements ActionListener{
                 prioTable.setValueAt(list[j], i, j);
             }
         }
+        Collections.sort(schedule.processes, new SortByPriority());
+        addChart(chartPanel, schedule.processes);
     }
     
     @Override
     public void actionPerformed(ActionEvent e){
         if(e.getSource()==fcfsBtn){
             varCard.show(varPanel, "ARRIVAL");
-            outputCard.show(mainPanel,"Table");
+            tableCard.show(tablePanel,"GENERAL");
+            tablePanel.setBorder(fcfsBorder);
         }
         else if(e.getSource()==NonPreBtn){
             varCard.show(varPanel, "ARRIVAL");
-            outputCard.show(mainPanel,"Table");
+            tableCard.show(tablePanel,"GENERAL");
+            tablePanel.setBorder(NonPreBorder);
         }
         else if(e.getSource()==PreBtn){
             varCard.show(varPanel, "ARRIVAL");
-            outputCard.show(mainPanel,"Table");
+            tableCard.show(tablePanel,"GENERAL");
+            tablePanel.setBorder(PreBorder);
         }
         else if(e.getSource()==rrBtn){
             algorithm = ROUND_ROBIN;
-            varCard.show(varPanel, "BLANK");
-            outputCard.show(mainPanel,"Table");
+            varCard.show(varPanel, "QUANTUM");
+            tableCard.show(tablePanel,"GENERAL_TABLE");
+            tablePanel.setBorder(rrBorder);
         }
         else if(e.getSource()==prioBtn){
             algorithm = PRIO;
             varCard.show(varPanel, "PRIORITY");
-            outputCard.show(mainPanel,"Prio");
+            tableCard.show(tablePanel,"PRIO_TABLE");
+            tablePanel.setBorder(prioBorder);
         }
         else if(e.getSource()==proceedBtn){
             scheduling();
