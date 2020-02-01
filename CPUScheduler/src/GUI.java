@@ -380,7 +380,7 @@ public class GUI extends JFrame implements ActionListener{
                 tableModel.setValueAt(list[j], i, j);
             }
         }    
-//        addChart(chartPanel, chartSp, schedule.processes);
+        addChart(chartPanel, chartSp, schedule.ganttBar);
     }
     
     private void roundRobin(){

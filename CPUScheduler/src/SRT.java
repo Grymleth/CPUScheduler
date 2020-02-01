@@ -30,6 +30,7 @@ public class SRT {
 
     public SRT(int burstTime[], int arrivalTime[]) {
         processes = new ArrayList<>();
+        ganttBar = new ArrayList<>();
         n = burstTime.length;
         pid = new int[n]; // it takes pid of process
         at = new int[n]; // at means arrival time
@@ -64,30 +65,47 @@ public class SRT {
 
     public static void main(String args[]) {
         int araybal[] = {
-            0,
-            2,
-            1
+            2,5,1,0,4
         };
         int berst[] = {
-            23,
-            32,
-            11
+            6,2,8,3,4
         };
         SRT tes = new SRT(berst, araybal);
 
     }
 
     void process() {
-
+        int prev_c = -1;
+        int gi = -1;
         while (true) {
             int min = 99, c = n;
-            if (tot == n)
+            gi = ganttBar.size();
+            if (tot == n){
+                ganttBar.add(new Process(0, 0, c));
+                ganttBar.get(gi).setCompletion(st);
+                ganttBar.get(gi).setBurst(ganttBar.get(gi).getCompletion()-ganttBar.get(gi-1).getCompletion());
                 break;
+            }
+                
 
             for (int i = 0; i < n; i++) {
                 if ((at[i] <= st) && (f[i] == 0) && (bt[i] < min)) {
-                    min = bt[i];
+                    min = bt[i];  
                     c = i;
+                    
+                }
+            }
+            
+            if(c != prev_c && prev_c > -1){
+                if(ganttBar.isEmpty()){
+                    ganttBar.add(new Process(st+at[prev_c], 0, prev_c));
+                    ganttBar.get(gi).setCompletion(st+at[prev_c]);
+                    
+                }
+                else{
+                    ganttBar.add(new Process(0, 0, c));
+                    ganttBar.get(gi).setCompletion(st);
+                    ganttBar.get(gi).setBurst(ganttBar.get(gi).getCompletion()-ganttBar.get(gi-1).getCompletion());
                 }
             }
 
@@ -97,11 +115,13 @@ public class SRT {
                 bt[c]--;
                 st++;
                 if (bt[c] == 0) {
+                    
                     ct[c] = st;
                     f[c] = 1;
                     tot++;
                 }
             }
+            prev_c = c;
         }
 
         for (int i = 0; i < n; i++) {

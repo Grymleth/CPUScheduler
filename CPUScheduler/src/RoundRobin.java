@@ -50,13 +50,10 @@ public class RoundRobin {
                     else{
                         decrement += obj.getRemBurst();
                     }
-
-                    System.out.printf("Process %d quantum lapse %d | ",j+1,decrement);
                     x++;
                 }
                 while(x<repeats);
 
-                System.out.printf("Process %d decremented by %d \n",j+1,decrement);
                 completion+=decrement;
                 obj.decrement(decrement);
 
@@ -64,12 +61,12 @@ public class RoundRobin {
                 obj.setCompletion(completion);
                 System.out.println(obj.getCompletion());
                 ganttBar.add(obj);
-
-                System.out.println("completion: :"+obj.getCompletion());
                 
             }
-            System.out.println("Round!!");
+
         }
+        
+        Process.displayTable(ganttBar);
     }
     
     public final void completeTable(){
