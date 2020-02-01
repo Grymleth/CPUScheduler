@@ -21,7 +21,6 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
-import javax.swing.table.DefaultTableModel;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -62,10 +61,10 @@ public class GUI extends JFrame implements ActionListener{
                     varPanel,
                     arrivalPanel,
                     prioFldPanel,
-                    buttonPanel,
+                    algoButtonPanel,
                     quantumPanel,
                     chartPanel,
-                    addPanel;
+                    opBtnPanel;
     
     private Border border1,
                     fcfsBorder,
@@ -76,11 +75,9 @@ public class GUI extends JFrame implements ActionListener{
                     burstFldBorder,
                     arrivalFldBorder,
                     prioFldBorder,
-                    fcfsChBorder,
-                    rrChBorder,
-                    prioChBorder,
-                    PreChBorder,
-                    NonPreChBorder;
+                    chartBorder,
+                    algoBtnBorder,
+                    opBtnBorder;
                     
     private JLabel label,
                     label2,
@@ -90,14 +87,15 @@ public class GUI extends JFrame implements ActionListener{
     private JTable table,
                     prioTable;
     
-    private DefaultTableModel tableModel,
+    private NoEditTableModel tableModel,
                               prioModel;
                                 
     private JScrollPane genSp,
                         prioOutSp,
                         burstFldSp,
                         arrivalFldSp,
-                        prioFldSp;
+                        prioFldSp,
+                        chartSp;
     
     GridBagConstraints burstConstraints = new GridBagConstraints();
     GridBagConstraints arrivalConstraints = new GridBagConstraints();
@@ -107,8 +105,8 @@ public class GUI extends JFrame implements ActionListener{
     private int algorithm;
     
     private static final int FIRST_COME = 0;
-    private static final int SJT = 1;
-    private static final int SRJT = 2;
+    private static final int SJF = 1;
+    private static final int SRTF = 2;
     private static final int ROUND_ROBIN = 3;
     private static final int PRIO = 4;
     
@@ -128,20 +126,23 @@ public class GUI extends JFrame implements ActionListener{
         this.setLayout(new GridLayout(3,1));
         
         border1 = BorderFactory.createLineBorder(Color.white);
-        fcfsBorder = BorderFactory.createTitledBorder(border1,"FCFS");
-        NonPreBorder = BorderFactory.createTitledBorder(border1,"Non-Preemptive");
-        PreBorder = BorderFactory.createTitledBorder(border1,"Preemptive");
+        fcfsBorder = BorderFactory.createTitledBorder(border1,"First Come First Serve");
+        NonPreBorder = BorderFactory.createTitledBorder(border1,"Shortest Job First");
+        PreBorder = BorderFactory.createTitledBorder(border1,"Shortest Remaining Time First");
         rrBorder = BorderFactory.createTitledBorder(border1,"Round Robin");
         prioBorder = BorderFactory.createTitledBorder(border1,"Priority");
         burstFldBorder = BorderFactory.createTitledBorder(border1,"Burst Time");
         arrivalFldBorder = BorderFactory.createTitledBorder(border1,"Arrival Time");
         prioFldBorder = BorderFactory.createTitledBorder(border1,"Priority");
+        chartBorder = BorderFactory.createTitledBorder(border1,"Gantt Chart");
+        algoBtnBorder = BorderFactory.createTitledBorder(border1,"Scheduling Algorithms");
+        opBtnBorder = BorderFactory.createTitledBorder(border1,"Options");
         
         table = new JTable();
         prioTable = new JTable();
         
-        tableModel = new DefaultTableModel();
-        prioModel = new DefaultTableModel();
+        tableModel = new NoEditTableModel();
+        prioModel = new NoEditTableModel();
         tableModel.setColumnIdentifiers(tableName);
         prioModel.setColumnIdentifiers(prioTableName);
         
@@ -156,8 +157,8 @@ public class GUI extends JFrame implements ActionListener{
         
         fcfsBtn = new JButton("FCFS");
         rrBtn = new JButton("Round Robin");
-        NonPreBtn =  new JButton("Non-Preemptive");
-        PreBtn = new JButton("Preemptive");
+        NonPreBtn =  new JButton("SJF");
+        PreBtn = new JButton("SRTF");
         prioBtn = new JButton("Priority");
         proceedBtn = new JButton("PROCEED");
         addBtn = new JButton("ADD");
@@ -167,7 +168,7 @@ public class GUI extends JFrame implements ActionListener{
         tablePanel = new JPanel(tableCard);
         prioTablePanel =  new JPanel();
         generalTablePanel = new JPanel();
-        buttonPanel = new JPanel();
+        algoButtonPanel = new JPanel();
         inputPanel = new JPanel(new GridLayout(1,3));
         burstPanel = new JPanel(new GridBagLayout());
         varPanel = new JPanel(varCard);
@@ -175,13 +176,14 @@ public class GUI extends JFrame implements ActionListener{
         prioFldPanel = new JPanel(new GridBagLayout());
         quantumPanel = new JPanel();
         chartPanel = new JPanel(new GridBagLayout());
-        addPanel = new JPanel();
+        opBtnPanel = new JPanel(new FlowLayout());
         
         genSp = new JScrollPane(table);
         prioOutSp = new JScrollPane(prioTable);
         burstFldSp = new JScrollPane(burstPanel);
         arrivalFldSp = new JScrollPane(arrivalPanel);
         prioFldSp = new JScrollPane(prioFldPanel);
+        chartSp = new JScrollPane(chartPanel,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         
         label = new JLabel("test");
         label2 = new JLabel("test2");
@@ -199,13 +201,14 @@ public class GUI extends JFrame implements ActionListener{
         prioOutSp.setPreferredSize(new Dimension(450,250));
         genSp.setPreferredSize(new Dimension(450,250));
         
-        buttonPanel.add(fcfsBtn);
-        buttonPanel.add(NonPreBtn);
-        buttonPanel.add(PreBtn);
-        buttonPanel.add(rrBtn);
-        buttonPanel.add(prioBtn);
+        algoButtonPanel.add(fcfsBtn);
+        algoButtonPanel.add(NonPreBtn);
+        algoButtonPanel.add(PreBtn);
+        algoButtonPanel.add(rrBtn);
+        algoButtonPanel.add(prioBtn);
         
-        add(buttonPanel);
+        add(algoButtonPanel);
+        algoButtonPanel.setBorder(algoBtnBorder);
         
         add(inputPanel);
             inputPanel.add(burstFldSp);
@@ -218,9 +221,11 @@ public class GUI extends JFrame implements ActionListener{
                 varPanel.add(quantumPanel, "QUANTUM");
                     quantumPanel.add(rrQLbl);
                     quantumPanel.add(rrQnum);
-                inputPanel.add(addPanel);
-                    addPanel.add(addBtn);   
-                    addPanel.add(removeBtn);
+                inputPanel.add(opBtnPanel);
+                    opBtnPanel.setBorder(opBtnBorder);
+                    opBtnPanel.add(addBtn);   
+                    opBtnPanel.add(removeBtn);
+                    opBtnPanel.add(proceedBtn);
                 
         add(mainPanel,BorderLayout.SOUTH);
             mainPanel.add(tablePanel);
@@ -229,9 +234,7 @@ public class GUI extends JFrame implements ActionListener{
                     generalTablePanel.add(genSp);
                 tablePanel.add(prioTablePanel, "PRIO_TABLE");
                     prioTablePanel.add(prioOutSp);
-            mainPanel.add(chartPanel);
-                
-        add(proceedBtn);
+            mainPanel.add(chartSp);
                 
         fcfsBtn.addActionListener(this);
         NonPreBtn.addActionListener(this);
@@ -272,10 +275,9 @@ public class GUI extends JFrame implements ActionListener{
         
     }
         
-    private void addChart(JPanel panel, ArrayList<Process> process){
+    private void addChart(JPanel panel, JScrollPane sp, ArrayList<Process> process){
         int size = process.size();
         int compl = 0;
-
         Iterator it = process.iterator();
         Process obj;
         JLabel[] chart = new JLabel[size];        
@@ -283,33 +285,102 @@ public class GUI extends JFrame implements ActionListener{
         Border border;
         
         panel.removeAll();
+        panel.setBorder(chartBorder);
         GridBagConstraints gbc = new GridBagConstraints();
+
+        int x=0;
+        int y=0;
         gbc.fill=0;
-        gbc.gridheight=1;
-        gbc.gridwidth=1;
-        
         for(int i=0;it.hasNext();i++){
             obj = (Process)it.next();
-            
+            if(i%5 == 0){
+                y++;
+                x=0;
+            }
+
             chart[i] = new JLabel("P"+(obj.getID()+1));
-            compl += obj.getBurst()+obj.getArrival();
-            
-            gbc.gridx=i;
-            gbc.gridy=6;
+            compl = process.get(i).getCompletion();
+            gbc.gridx=x++;
+            gbc.gridy=y;
             panel.add(chart[i],gbc);
             border = BorderFactory.createTitledBorder(b1,Integer.toString(compl),TitledBorder.RIGHT,TitledBorder.BELOW_BOTTOM);
             chart[i].setBorder(border);
             chart[i].setPreferredSize(new Dimension(70,40));
         }
+        
+        pack();
     }
     
     private void scheduling(){
-        if(algorithm == ROUND_ROBIN){
-            roundRobin();
+        switch (algorithm) {
+            case FIRST_COME:
+                fcfs();
+                break;
+            case SJF:
+                sjf();
+                break;
+            case SRTF:
+                srtf();
+                break;
+            case ROUND_ROBIN:
+                roundRobin();
+                break;
+            case PRIO:
+                priority();
+                break;
+            default:
+                break;
         }
-        else if(algorithm == PRIO){
-            priority();
-        }
+    }
+    
+    private void fcfs(){
+        int[] bursts = getBurstArray();
+        int[] arrival = getArrivalArray();
+        FCFS schedule = new FCFS(bursts, arrival);
+        
+        String[] list;
+        for(int i=0;i<num;i++){
+            list = schedule.processes.get(i).toStringArray(false);
+            tableModel.setValueAt(list[0], i, 0);
+            for(int j=1;j<6;j++){
+                tableModel.setValueAt(list[j], i, j);
+            }
+        }    
+        Collections.sort(schedule.processes, new SortByArrival());
+        addChart(chartPanel, chartSp, schedule.processes);
+    }
+    
+    private void sjf(){
+        int[] bursts = getBurstArray();
+        int[] arrival = getArrivalArray();
+        SJF schedule = new SJF(bursts, arrival);
+        
+        String[] list;
+        for(int i=0;i<num;i++){
+            list = schedule.processes.get(i).toStringArray(false);
+            tableModel.setValueAt(list[0], i, 0);
+            for(int j=1;j<6;j++){
+                tableModel.setValueAt(list[j], i, j);
+            }
+        }    
+        Collections.sort(schedule.processes, new SortByBurst());
+        addChart(chartPanel, chartSp, schedule.processes);
+    }
+    
+    private void srtf(){
+        int[] bursts = getBurstArray();
+        int[] arrival = getArrivalArray();
+        SRT schedule = new SRT(bursts, arrival);
+        
+        String[] list;
+        for(int i=0;i<num;i++){
+            list = schedule.processes.get(i).toStringArray(false);
+            tableModel.setValueAt(list[0], i, 0);
+            for(int j=1;j<6;j++){
+                tableModel.setValueAt(list[j], i, j);
+            }
+        }    
+//        addChart(chartPanel, chartSp, schedule.processes);
     }
     
     private void roundRobin(){
@@ -326,8 +397,7 @@ public class GUI extends JFrame implements ActionListener{
             }
         }    
         
-        addChart(chartPanel, schedule.ganttBar);
-        
+        addChart(chartPanel, chartSp, schedule.ganttBar);
     }
     
     private void priority(){
@@ -344,22 +414,25 @@ public class GUI extends JFrame implements ActionListener{
             }
         }
         Collections.sort(schedule.processes, new SortByPriority());
-        addChart(chartPanel, schedule.processes);
+        addChart(chartPanel, chartSp, schedule.processes);
     }
     
     @Override
     public void actionPerformed(ActionEvent e){
         if(e.getSource()==fcfsBtn){
+            algorithm = FIRST_COME;
             varCard.show(varPanel, "ARRIVAL");
             tableCard.show(tablePanel,"GENERAL");
             tablePanel.setBorder(fcfsBorder);
         }
         else if(e.getSource()==NonPreBtn){
+            algorithm = SJF;
             varCard.show(varPanel, "ARRIVAL");
             tableCard.show(tablePanel,"GENERAL");
             tablePanel.setBorder(NonPreBorder);
         }
         else if(e.getSource()==PreBtn){
+            algorithm = SRTF;
             varCard.show(varPanel, "ARRIVAL");
             tableCard.show(tablePanel,"GENERAL");
             tablePanel.setBorder(PreBorder);
@@ -395,7 +468,8 @@ public class GUI extends JFrame implements ActionListener{
             removeField(burstFld.get(num-1), burstPanel, burstConstraints);
             removeField(arrivalFld.get(num-1), arrivalPanel, arrivalConstraints);
             removeField(prioFld.get(num-1), prioFldPanel, prioConstraints);
-            
+            tableModel.removeRow(num-1);
+            prioModel.removeRow(num-1);
             num--;
         }
     }
@@ -434,4 +508,5 @@ public class GUI extends JFrame implements ActionListener{
         
         return priority;
     }
+   
 }

@@ -36,7 +36,9 @@ public class Process {
     public int getCompletion(){return details[COMPLETION];}
     public int getPriority(){return details[PRIORITY];}
     public int getTurnaround(){return details[TURNAROUND];}
+    public void setTurnaround(int turnaround){details[TURNAROUND]=turnaround;}
     public int getWaiting(){return details[WAITING];}
+    public void setWaiting(int waiting){details[WAITING]=waiting;}
     public int getRemBurst(){return details[REM_BURST];}
     public void decrement(int decrement){
         details[REM_BURST] -= decrement;
