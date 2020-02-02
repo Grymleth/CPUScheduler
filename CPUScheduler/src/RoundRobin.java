@@ -3,10 +3,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class RoundRobin {
-    private final int quantum;
-    
     ArrayList<Process> processes;
     ArrayList<Process> ganttBar;
+    
+    private final int quantum;
+    private float avgwt;
+    private float avgtat;
     
     
     public RoundRobin(int[] burst, int quantum){
@@ -81,7 +83,12 @@ public class RoundRobin {
         while(it1.hasNext()){
             process = (Process) it1.next();
             process.compute();
+            avgwt += process.getWaiting();
+            avgtat += process.getTurnaround();
         }
+        
+        avgwt = (float) avgwt / processes.size();
+        avgtat = (float) avgtat / processes.size();
     }
     
 
@@ -104,4 +111,7 @@ public class RoundRobin {
             return 1;
         }
     }
+    
+    public float getAvgwt(){return avgwt;}
+    public float getAvgtat(){return avgtat;}      
 }

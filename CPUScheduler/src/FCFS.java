@@ -3,8 +3,8 @@ import java.util.Collections;
 
 public class FCFS {
     ArrayList < Process > processes;
-    private float averageWaitingTIme = 0;
-    private float averageTurnAroundTime = 0;
+    private float avgwt = 0;
+    private float avgtat = 0;
 
     public FCFS(int[] burst, int[] arrival) {
         int n = burst.length;
@@ -49,8 +49,8 @@ public class FCFS {
             }
             turnAroundTime[i] = completionTime[i] - arrivalTime[i]; // turnaround time= completion time- arrival time
             waitingTime[i] = turnAroundTime[i] - burstTime[i]; // waiting time= turnaround time- burst time
-            averageWaitingTIme += waitingTime[i]; // total waiting time
-            averageTurnAroundTime += turnAroundTime[i]; // total turnaround time
+            avgwt += waitingTime[i]; // total waiting time
+            avgtat += turnAroundTime[i]; // total turnaround time
             
             processes.add(new Process(burst[i], arrival[i], processNumber[i]));
             processes.get(i).setCompletion(completionTime[i]);
@@ -59,8 +59,14 @@ public class FCFS {
           
         }
         
+        avgwt = (float)avgwt/n;
+        avgtat = (float)avgtat/n;
+        
         Collections.sort(processes, new SortByID());
-
+        
     }
+    
+    public float getAvgwt(){return avgwt;}
+    public float getAvgtat(){return avgtat;}    
 
 }

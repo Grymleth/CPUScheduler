@@ -6,6 +6,7 @@ import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -37,7 +38,8 @@ public class GUI extends JFrame implements ActionListener{
                     prioBtn,
                     proceedBtn,
                     addBtn,
-                    removeBtn;
+                    removeBtn,
+                    creditsBtn;
     
     private final CardLayout inputCard,
                        varCard,
@@ -55,7 +57,8 @@ public class GUI extends JFrame implements ActionListener{
                     algoButtonPanel,
                     quantumPanel,
                     chartPanel,
-                    opBtnPanel;
+                    opBtnPanel,
+                    averagePanel;
     
     private final Border border1,
                     fcfsBorder,
@@ -68,12 +71,14 @@ public class GUI extends JFrame implements ActionListener{
                     prioFldBorder,
                     chartBorder,
                     algoBtnBorder,
-                    opBtnBorder;
+                    opBtnBorder,
+                    averageBorder;
                     
-    private final JLabel label,
-                    label2,
-                    rrQLbl,
-                    blankLbl;
+    private final JLabel rrQLbl,
+                         atatLbl,
+                         atatVal,
+                         awtLbl,
+                         awtVal;
     
     private final JTable table,
                     prioTable;
@@ -103,16 +108,13 @@ public class GUI extends JFrame implements ActionListener{
     
     public GUI(){
         super("CPU Scheduler");
-        int[] burst = {3,4,3};
-        RoundRobin schedule = new RoundRobin(burst, 4);
-        ArrayList<Process> list = schedule.processes;
         
         String[] tableName = {"Process","BT","AT","CT","TAT","WT"};
         String[] prioTableName = {"Process","Priority","BT","AT","CT","TAT","WT"};
         
         this.num = 0;
         
-        this.setLayout(new GridLayout(3,1));
+        this.setLayout(new GridLayout(4,1));
         burstConstraints = new GridBagConstraints();
         arrivalConstraints = new GridBagConstraints();
         prioConstraints = new GridBagConstraints();
@@ -129,6 +131,7 @@ public class GUI extends JFrame implements ActionListener{
         chartBorder = BorderFactory.createTitledBorder(border1,"Gantt Chart");
         algoBtnBorder = BorderFactory.createTitledBorder(border1,"Scheduling Algorithms");
         opBtnBorder = BorderFactory.createTitledBorder(border1,"Options");
+        averageBorder = BorderFactory.createTitledBorder(border1,"Performance");
         
         table = new JTable();
         prioTable = new JTable();
@@ -155,6 +158,7 @@ public class GUI extends JFrame implements ActionListener{
         proceedBtn = new JButton("PROCEED");
         addBtn = new JButton("ADD");
         removeBtn = new JButton("REMOVE");
+        creditsBtn = new JButton("CREDITS");
         
         mainPanel = new JPanel();
         tablePanel = new JPanel(tableCard);
@@ -169,18 +173,20 @@ public class GUI extends JFrame implements ActionListener{
         quantumPanel = new JPanel();
         chartPanel = new JPanel(new GridBagLayout());
         opBtnPanel = new JPanel(new FlowLayout());
+        averagePanel = new JPanel(new GridBagLayout());
         
         genSp = new JScrollPane(table);
         prioOutSp = new JScrollPane(prioTable);
         burstFldSp = new JScrollPane(burstPanel);
         arrivalFldSp = new JScrollPane(arrivalPanel);
         prioFldSp = new JScrollPane(prioFldPanel);
-        chartSp = new JScrollPane(chartPanel,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        
-        label = new JLabel("test");
-        label2 = new JLabel("test2");
+        chartSp = new JScrollPane(chartPanel);
+
         rrQLbl = new JLabel("Quantum Time: ");
-        blankLbl = new JLabel("");
+        atatLbl = new JLabel("Ave. Turnaround Time");
+        awtLbl = new JLabel("Ave. Waiting Time");
+        atatVal = new JLabel();
+        awtVal = new JLabel();
         
         burstFld = new ArrayList<>();
         arrivalFld = new ArrayList<>();
@@ -192,6 +198,8 @@ public class GUI extends JFrame implements ActionListener{
         rrQLbl.setPreferredSize(new Dimension(150,25));
         prioOutSp.setPreferredSize(new Dimension(450,250));
         genSp.setPreferredSize(new Dimension(450,250));
+        chartSp.setPreferredSize(new Dimension(450, 100));
+        averagePanel.setPreferredSize(new Dimension(300, 100));
         
         algoButtonPanel.add(fcfsBtn);
         algoButtonPanel.add(NonPreBtn);
@@ -218,6 +226,25 @@ public class GUI extends JFrame implements ActionListener{
                     opBtnPanel.add(addBtn);   
                     opBtnPanel.add(removeBtn);
                     opBtnPanel.add(proceedBtn);
+                    opBtnPanel.add(creditsBtn);
+        add(averagePanel);
+            averagePanel.setBorder(averageBorder);
+            layoutAveragePanel();
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.gridy = 0;
+            gbc.gridx = 0;
+            gbc.insets = new Insets(10,10,10,10);
+            averagePanel.add(atatLbl,gbc);
+            gbc.gridy = 1;
+            gbc.gridx = 0;
+            averagePanel.add(atatVal,gbc);
+            gbc.gridy = 0;
+            gbc.gridx = 5;
+            averagePanel.add(awtLbl,gbc);
+            gbc.gridy = 1;
+            gbc.gridx = 5;
+            averagePanel.add(awtVal,gbc);
+            
                 
         add(mainPanel,BorderLayout.SOUTH);
             mainPanel.add(tablePanel);
@@ -227,6 +254,7 @@ public class GUI extends JFrame implements ActionListener{
                 tablePanel.add(prioTablePanel, "PRIO_TABLE");
                     prioTablePanel.add(prioOutSp);
             mainPanel.add(chartSp);
+            chartSp.setBorder(chartBorder);
                 
         fcfsBtn.addActionListener(this);
         NonPreBtn.addActionListener(this);
@@ -237,10 +265,11 @@ public class GUI extends JFrame implements ActionListener{
         proceedBtn.addActionListener(this);
         addBtn.addActionListener(this);
         removeBtn.addActionListener(this);
+        creditsBtn.addActionListener(this);
         
         setLayout(new FlowLayout());
-        setSize(600,700);
-        setPreferredSize(new Dimension(600,700));
+        setSize(600,800);
+        setPreferredSize(new Dimension(600,800));
         setVisible(true);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         
@@ -258,6 +287,7 @@ public class GUI extends JFrame implements ActionListener{
     }
     
     private void removeField(JTextField field, JPanel panel, GridBagConstraints gbc){
+        field.setText("");
         panel.remove(field);
         gbc.gridx=0;
         gbc.gridy--;
@@ -270,6 +300,8 @@ public class GUI extends JFrame implements ActionListener{
     private void addChart(JPanel panel, JScrollPane sp, ArrayList<Process> process){
         int size = process.size();
         int compl;
+        
+        panel.removeAll();
         Iterator it = process.iterator();
         Process obj;
         JLabel[] chart = new JLabel[size];        
@@ -277,7 +309,6 @@ public class GUI extends JFrame implements ActionListener{
         Border border;
         
         panel.removeAll();
-        panel.setBorder(chartBorder);
         GridBagConstraints gbc = new GridBagConstraints();
 
         int x=0;
@@ -285,10 +316,6 @@ public class GUI extends JFrame implements ActionListener{
         gbc.fill=0;
         for(int i=0;it.hasNext();i++){
             obj = (Process)it.next();
-            if(i%5 == 0){
-                y++;
-                x=0;
-            }
 
             chart[i] = new JLabel("P"+(obj.getID()+1));
             compl = process.get(i).getCompletion();
@@ -297,7 +324,7 @@ public class GUI extends JFrame implements ActionListener{
             panel.add(chart[i],gbc);
             border = BorderFactory.createTitledBorder(b1,Integer.toString(compl),TitledBorder.RIGHT,TitledBorder.BELOW_BOTTOM);
             chart[i].setBorder(border);
-            chart[i].setPreferredSize(new Dimension(70,40));
+            chart[i].setPreferredSize(new Dimension(30,40));
         }
         
         pack();
@@ -338,6 +365,10 @@ public class GUI extends JFrame implements ActionListener{
                 tableModel.setValueAt(list[j], i, j);
             }
         }    
+        
+        atatVal.setText(String.format("%.2fms", schedule.getAvgtat()));
+        awtVal.setText(String.format("%.2fms", schedule.getAvgwt()));
+        
         Collections.sort(schedule.processes, new SortByArrival());
         addChart(chartPanel, chartSp, schedule.processes);
     }
@@ -355,6 +386,10 @@ public class GUI extends JFrame implements ActionListener{
                 tableModel.setValueAt(list[j], i, j);
             }
         }    
+        
+        atatVal.setText(String.format("%.2fms", schedule.getAvgtat()));
+        awtVal.setText(String.format("%.2fms", schedule.getAvgwt()));
+        
         Collections.sort(schedule.processes, new SortByCompletion());
         addChart(chartPanel, chartSp, schedule.processes);
     }
@@ -371,7 +406,11 @@ public class GUI extends JFrame implements ActionListener{
             for(int j=1;j<6;j++){
                 tableModel.setValueAt(list[j], i, j);
             }
-        }    
+        }
+        
+        atatVal.setText(String.format("%.2fms", schedule.getAvgtat()));
+        awtVal.setText(String.format("%.2fms", schedule.getAvgwt()));
+        
         addChart(chartPanel, chartSp, schedule.ganttBar);
     }
     
@@ -393,6 +432,9 @@ public class GUI extends JFrame implements ActionListener{
                 tableModel.setValueAt(list[j], i, j);
             }
         }    
+
+        atatVal.setText(String.format("%.2fms", schedule.getAvgtat()));
+        awtVal.setText(String.format("%.2fms", schedule.getAvgwt()));
         
         addChart(chartPanel, chartSp, schedule.ganttBar);
     }
@@ -410,6 +452,10 @@ public class GUI extends JFrame implements ActionListener{
                 prioTable.setValueAt(list[j], i, j);
             }
         }
+        
+        atatVal.setText(String.format("%.2fms", schedule.getAvgtat()));
+        awtVal.setText(String.format("%.2fms", schedule.getAvgwt()));
+        
         Collections.sort(schedule.processes, new SortByPriority());
         addChart(chartPanel, chartSp, schedule.processes);
     }
@@ -489,6 +535,9 @@ public class GUI extends JFrame implements ActionListener{
             }
             num--;
         }
+        else if(e.getSource()==creditsBtn){
+            Credits credits = new Credits();
+        }
     }
     
     public static void main(String[] args) {
@@ -496,18 +545,12 @@ public class GUI extends JFrame implements ActionListener{
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 System.out.println(info.getName());
-                if ("CDE/Motif".equals(info.getName())) {
+                if ("Metal".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         
@@ -547,6 +590,10 @@ public class GUI extends JFrame implements ActionListener{
     
     public void errorMessage(String message, String error){
         JOptionPane.showMessageDialog(this, message, error, JOptionPane.ERROR_MESSAGE);
+    }
+    
+    private void layoutAveragePanel(){
+
     }
    
 }

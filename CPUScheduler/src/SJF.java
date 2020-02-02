@@ -3,16 +3,16 @@ import java.util.ArrayList;
 public class SJF {
     ArrayList<Process> processes;
     
-    int n;
-    int pid[];
-    int at[]; // at means arrival time
-    int bt[]; // bt means burst time
-    int ct[]; // ct means complete time
-    int ta[]; // ta means turn around time
-    int wt[]; //wt means waiting time
-    int f[]; // f means it is flag it checks process is completed or not
-    int st, tot;
-    float avgwt, avgta;
+    private int n;
+    private int pid[];
+    private int at[]; // at means arrival time
+    private int bt[]; // bt means burst time
+    private int ct[]; // ct means complete time
+    private int ta[]; // ta means turn around time
+    private int wt[]; //wt means waiting time
+    private int f[]; // f means it is flag it checks process is completed or not
+    private int st, tot;
+    private float avgwt, avgtat;
 
 
     public SJF(int burstTime[],int arrivalTime[]) {
@@ -30,7 +30,7 @@ public class SJF {
         st = 0;
         tot = 0;
         avgwt = 0;
-        avgta = 0;
+        avgtat = 0;
         
         for (int i = 0; i < n; i++) {
             at[i] = arrivalTime[i];
@@ -102,9 +102,14 @@ public class SJF {
         
         for (int i = 0; i < n; i++) {
             avgwt += wt[i];
-            avgta += ta[i];
-            System.out.println(pid[i] + "\t" + at[i] + "\t" + bt[i] + "\t" + ct[i] + "\t" + ta[i] + "\t" + wt[i]);
+            avgtat += ta[i];
         }
         
+        avgwt = (float) avgwt / n;
+        avgtat = (float) avgwt / n;
+        
     }
+    
+    public float getAvgwt(){return avgwt;}
+    public float getAvgtat(){return avgtat;}        
 }

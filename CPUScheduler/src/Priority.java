@@ -7,6 +7,9 @@ import java.util.Iterator;
 public class Priority {
     ArrayList<Process> processes;
     
+    private float avgwt;
+    private float avgtat;
+    
     public Priority(int[] burst,int[] priority){
         processes = new ArrayList<>();
         
@@ -36,16 +39,14 @@ public class Priority {
         while(it.hasNext()){
             process = (Process) it.next();
             process.compute();
+            avgwt += process.getWaiting();
+            avgtat += process.getTurnaround();
         }
-
+        
+        avgwt = (float) avgwt / processes.size();
+        avgtat = (float) avgtat / processes.size();
     }
-    
-    public static void main(String[] args) {
-        int[] burst = {10,5,8};
-        int[] priority = {2,0,1};
-        Priority x = new Priority(burst, priority);
 
-
-
-    }
+    public float getAvgwt(){return avgwt;}
+    public float getAvgtat(){return avgtat;}   
 }

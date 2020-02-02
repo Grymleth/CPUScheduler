@@ -4,17 +4,17 @@ public class SRT {
     ArrayList<Process> processes;
     ArrayList<Process> ganttBar;
     //System.out.println ("enter no of process:");
-    int n;
-    int pid[]; // it takes pid of process
-    int at[]; // at means arrival time
-    int bt[]; // bt means burst time
-    int ct[]; // ct means complete time
-    int ta[]; // ta means turn around time
-    int wt[]; // wt means waiting time
-    int f[]; // f means it is flag it checks process is completed or not
-    int k[]; // it is also stores brust time
-    int st, tot;
-    float avgwt, avgta;
+    private int n;
+    private int pid[]; // it takes pid of process
+    private int at[]; // at means arrival time
+    private int bt[]; // bt means burst time
+    private int ct[]; // ct means complete time
+    private int ta[]; // ta means turn around time
+    private int wt[]; // wt means waiting time
+    private int f[]; // f means it is flag it checks process is completed or not
+    private int k[]; // it is also stores brust time
+    private int st, tot;
+    private float avgwt, avgtat;
     //Scanner sc=new Scanner(System.in);
 
     public SRT(int burstTime[], int arrivalTime[]) {
@@ -32,7 +32,7 @@ public class SRT {
         st = 0;
         tot = 0;
         avgwt = 0;
-        avgta = 0;
+        avgtat = 0;
         for (int i = 0; i < n; i++) {
             pid[i] = i;
             at[i] = arrivalTime[i];
@@ -85,10 +85,12 @@ public class SRT {
                 }
             }
             
-            if(c != prev_c && prev_c > -1){
+            if(c != prev_c && prev_c > -1 && prev_c != n){
                 if(ganttBar.isEmpty()){
-                    ganttBar.add(new Process(st+at[prev_c], 0, prev_c));
-                    ganttBar.get(gi).setCompletion(st+at[prev_c]);
+                    
+                    ganttBar.add(new Process(st-at[prev_c], 0, prev_c));
+                    System.out.println(st);
+                    ganttBar.get(gi).setCompletion(st);
                     
                 }
                 else{
@@ -110,22 +112,30 @@ public class SRT {
                     tot++;
                 }
             }
-            prev_c = c;
+            if(c != n)
+                prev_c = c;
+            System.out.println(prev_c);
         }
 
         for (int i = 0; i < n; i++) {
             ta[i] = ct[i] - at[i];
             wt[i] = ta[i] - k[i];
             avgwt += wt[i];
-            avgta += ta[i];
+            avgtat += ta[i];
         }
+        
+        avgtat = (float) avgtat/n;
+        avgwt = (float) avgwt/n;
 
         System.out.println("pid  arrival  burst  complete turn waiting");
         for (int i = 0; i < n; i++) {
             System.out.println(pid[i] + "\t" + at[i] + "\t" + k[i] + "\t" + ct[i] + "\t" + ta[i] + "\t" + wt[i]);
         }
 
-        System.out.println("\naverage tat is " + (float)(avgta / n));
-        System.out.println("average wt is " + (float)(avgwt / n));
+        System.out.println("\naverage tat is " + avgtat);
+        System.out.println("average wt is " + avgwt);
     }
+    
+    public float getAvgwt(){return avgwt;}
+    public float getAvgtat(){return avgtat;}
 }
