@@ -302,6 +302,8 @@ public class GUI extends JFrame implements ActionListener{
         int compl;
         
         panel.removeAll();
+        panel.revalidate();
+        panel.repaint();
         Iterator it = process.iterator();
         Process obj;
         JLabel[] chart = new JLabel[size];        

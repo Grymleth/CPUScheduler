@@ -1,4 +1,8 @@
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
+
 public class Process {
     private int[] details;
     
@@ -62,7 +66,20 @@ public class Process {
         return array;
     }
     
-    public static void main(String[] args) {
-        
+    public static void displayTable(ArrayList<Process> processes){
+        System.out.println("PID\tPrio\tBT\tAT\tCT\tTAT\tWT");
+        Iterator it = processes.iterator();
+        Process obj;
+        while(it.hasNext()){
+            obj = (Process) it.next();
+            System.out.printf("%d\t%d\t%d\t%d\t%d\t%d\t%d\n",
+                    obj.getID(),
+                    obj.getPriority(),
+                    obj.getBurst(),
+                    obj.getArrival(),
+                    obj.getCompletion(),
+                    obj.getTurnaround(),
+                    obj.getWaiting());
+        }
     }
 }

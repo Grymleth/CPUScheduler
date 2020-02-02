@@ -48,6 +48,9 @@ public class SJF {
             processes.get(i).setTurnaround(ta[i]);
             processes.get(i).setWaiting(wt[i]);
         }
+        
+        Process.displayTable(processes);
+        System.out.println("AVGTAT: " + avgtat);
     }
 
     public static void main(String args[]) {
@@ -106,7 +109,7 @@ public class SJF {
         }
         
         avgwt = (float) avgwt / n;
-        avgtat = (float) avgwt / n;
+        avgtat = (float) avgtat / n;
         
     }
     
