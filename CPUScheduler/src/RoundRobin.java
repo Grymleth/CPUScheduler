@@ -1,8 +1,6 @@
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.ListIterator;
 
 public class RoundRobin {
     private final int quantum;
@@ -63,10 +61,7 @@ public class RoundRobin {
                 ganttBar.add(obj);
                 
             }
-
         }
-        
-        Process.displayTable(ganttBar);
     }
     
     public final void completeTable(){
@@ -109,15 +104,4 @@ public class RoundRobin {
             return 1;
         }
     }
-  
-    public static void main(String[] args) {
-        int[] burst = {3,4,3};
-        RoundRobin x = new RoundRobin(burst, 4);
-    }
-
-    public ArrayList<Process> shit(){
-        return processes;
-    }
-
-
 }

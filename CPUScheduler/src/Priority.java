@@ -18,7 +18,6 @@ public class Priority {
         completeTable();
         
         Collections.sort(processes, new SortByID());
-        Process.displayTable(processes);
     }
     
     public final void completeTable(){

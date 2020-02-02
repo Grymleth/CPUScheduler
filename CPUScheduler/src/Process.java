@@ -1,6 +1,3 @@
-import java.util.ArrayList;
-import java.util.Iterator;
-import javax.swing.JOptionPane;
 
 public class Process {
     private int[] details;
@@ -47,23 +44,6 @@ public class Process {
     public void compute(){
         details[TURNAROUND]=details[COMPLETION] - details[ARRIVAL];
         details[WAITING]=details[TURNAROUND]-details[BURST];
-    }
-
-    public static void displayTable(ArrayList<Process> processes){
-        System.out.println("PID\tPrio\tBT\tAT\tCT\tTAT\tWT");
-        Iterator it = processes.iterator();
-        Process obj;
-        while(it.hasNext()){
-            obj = (Process) it.next();
-            System.out.printf("%d\t%d\t%d\t%d\t%d\t%d\t%d\n",
-                    obj.getID(),
-                    obj.getPriority(),
-                    obj.getBurst(),
-                    obj.getArrival(),
-                    obj.getCompletion(),
-                    obj.getTurnaround(),
-                    obj.getWaiting());
-        }
     }
     
     public String[] toStringArray(boolean isPriority){

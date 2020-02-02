@@ -15,6 +15,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -22,24 +23,14 @@ import javax.swing.JTextField;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/**
- *
- * @author aevan
- */
 public class GUI extends JFrame implements ActionListener{
-    private ArrayList<JTextField> burstFld,
+    private final ArrayList<JTextField> burstFld,
                                   arrivalFld,
                                   prioFld;
     
-    private JTextField rrQnum;
+    private final JTextField rrQnum;
     
-    private JButton fcfsBtn,
+    private final JButton fcfsBtn,
                     rrBtn,
                     NonPreBtn,
                     PreBtn,
@@ -48,11 +39,11 @@ public class GUI extends JFrame implements ActionListener{
                     addBtn,
                     removeBtn;
     
-    private CardLayout inputCard,
+    private final CardLayout inputCard,
                        varCard,
                        tableCard;
     
-    private JPanel mainPanel,
+    private final JPanel mainPanel,
                     tablePanel,
                     generalTablePanel,
                     prioTablePanel,
@@ -66,7 +57,7 @@ public class GUI extends JFrame implements ActionListener{
                     chartPanel,
                     opBtnPanel;
     
-    private Border border1,
+    private final Border border1,
                     fcfsBorder,
                     PreBorder,
                     NonPreBorder,
@@ -79,27 +70,27 @@ public class GUI extends JFrame implements ActionListener{
                     algoBtnBorder,
                     opBtnBorder;
                     
-    private JLabel label,
+    private final JLabel label,
                     label2,
                     rrQLbl,
                     blankLbl;
     
-    private JTable table,
+    private final JTable table,
                     prioTable;
     
-    private NoEditTableModel tableModel,
+    private final NoEditTableModel tableModel,
                               prioModel;
                                 
-    private JScrollPane genSp,
+    private final JScrollPane genSp,
                         prioOutSp,
                         burstFldSp,
                         arrivalFldSp,
                         prioFldSp,
                         chartSp;
     
-    GridBagConstraints burstConstraints = new GridBagConstraints();
-    GridBagConstraints arrivalConstraints = new GridBagConstraints();
-    GridBagConstraints prioConstraints = new GridBagConstraints();
+    GridBagConstraints burstConstraints, 
+                       arrivalConstraints, 
+                       prioConstraints;
     
     private int num;
     private int algorithm;
@@ -119,11 +110,12 @@ public class GUI extends JFrame implements ActionListener{
         String[] tableName = {"Process","BT","AT","CT","TAT","WT"};
         String[] prioTableName = {"Process","Priority","BT","AT","CT","TAT","WT"};
         
-        Process.displayTable(list);
-        
         this.num = 0;
         
         this.setLayout(new GridLayout(3,1));
+        burstConstraints = new GridBagConstraints();
+        arrivalConstraints = new GridBagConstraints();
+        prioConstraints = new GridBagConstraints();
         
         border1 = BorderFactory.createLineBorder(Color.white);
         fcfsBorder = BorderFactory.createTitledBorder(border1,"First Come First Serve");
@@ -277,7 +269,7 @@ public class GUI extends JFrame implements ActionListener{
         
     private void addChart(JPanel panel, JScrollPane sp, ArrayList<Process> process){
         int size = process.size();
-        int compl = 0;
+        int compl;
         Iterator it = process.iterator();
         Process obj;
         JLabel[] chart = new JLabel[size];        
@@ -311,7 +303,7 @@ public class GUI extends JFrame implements ActionListener{
         pack();
     }
     
-    private void scheduling(){
+    private void scheduling() throws ZeroQuantumTimeException{
         switch (algorithm) {
             case FIRST_COME:
                 fcfs();
@@ -383,9 +375,14 @@ public class GUI extends JFrame implements ActionListener{
         addChart(chartPanel, chartSp, schedule.ganttBar);
     }
     
-    private void roundRobin(){
+    private void roundRobin() throws ZeroQuantumTimeException{
         int[] bursts = getBurstArray();
         int quantum = Integer.parseInt(rrQnum.getText());
+        
+        if(quantum < 1){
+            throw new ZeroQuantumTimeException();
+        }
+        
         RoundRobin schedule = new RoundRobin(bursts, quantum);
         
         String[] list;
@@ -450,7 +447,21 @@ public class GUI extends JFrame implements ActionListener{
             tablePanel.setBorder(prioBorder);
         }
         else if(e.getSource()==proceedBtn){
-            scheduling();
+            try{
+                if(num == 0)
+                    throw new NullPointerException();
+                scheduling();
+            }
+            catch(NumberFormatException ex){
+                errorMessage("Invalid Input\nPlease enter positive integers only","Empty Fields");
+            }
+            catch(NullPointerException ex){
+                errorMessage("There are no fields!","No Fields");
+            }
+            catch(ZeroQuantumTimeException ex){
+                errorMessage("Quantum Time cannot be less than 1", "Zero Quantum Time");
+            }
+                
         }
         else if(e.getSource()==addBtn){
             burstFld.add(new JTextField("",5));
@@ -465,16 +476,41 @@ public class GUI extends JFrame implements ActionListener{
             num++;
         }
         else if(e.getSource()==removeBtn){
-            removeField(burstFld.get(num-1), burstPanel, burstConstraints);
-            removeField(arrivalFld.get(num-1), arrivalPanel, arrivalConstraints);
-            removeField(prioFld.get(num-1), prioFldPanel, prioConstraints);
-            tableModel.removeRow(num-1);
-            prioModel.removeRow(num-1);
+            try{
+                removeField(burstFld.get(num-1), burstPanel, burstConstraints);
+                removeField(arrivalFld.get(num-1), arrivalPanel, arrivalConstraints);
+                removeField(prioFld.get(num-1), prioFldPanel, prioConstraints);
+                tableModel.removeRow(num-1);
+                prioModel.removeRow(num-1);
+            }
+            catch(ArrayIndexOutOfBoundsException ex){
+                errorMessage("Panel is already empty!", "Empty Panel");
+                return;
+            }
             num--;
         }
     }
     
     public static void main(String[] args) {
+        // Look and feel
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                System.out.println(info.getName());
+                if ("CDE/Motif".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        
         GUI x = new GUI();
                 
     }
@@ -507,6 +543,10 @@ public class GUI extends JFrame implements ActionListener{
         }
         
         return priority;
+    }
+    
+    public void errorMessage(String message, String error){
+        JOptionPane.showMessageDialog(this, message, error, JOptionPane.ERROR_MESSAGE);
     }
    
 }

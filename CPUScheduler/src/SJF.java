@@ -1,16 +1,5 @@
 import java.util.ArrayList;
-import java.util.Scanner;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/**
- *
- * @author 201811249
- */
 public class SJF {
     ArrayList<Process> processes;
     
@@ -42,17 +31,15 @@ public class SJF {
         tot = 0;
         avgwt = 0;
         avgta = 0;
-
+        
         for (int i = 0; i < n; i++) {
-            //System.out.println ("enter process " + (i+1) + " arrival time:");
             at[i] = arrivalTime[i];
-            System.out.println("arrival time of process " + i + 1 + " = " + arrivalTime[i]);
             bt[i] = burstTime[i];
-            System.out.println("Burst time of process " + i + 1 + " = " + burstTime[i]);
             pid[i] = i;
             f[i] = 0;
 
         }
+        
         process();
         
         for(int i=0;i<n;i++){
@@ -61,8 +48,6 @@ public class SJF {
             processes.get(i).setTurnaround(ta[i]);
             processes.get(i).setWaiting(wt[i]);
         }
-        
-        Process.displayTable(processes);
     }
 
     public static void main(String args[]) {
@@ -114,15 +99,12 @@ public class SJF {
             }
             
         }
-
-        System.out.println("\npid  arrival brust  complete turn waiting");
+        
         for (int i = 0; i < n; i++) {
             avgwt += wt[i];
             avgta += ta[i];
             System.out.println(pid[i] + "\t" + at[i] + "\t" + bt[i] + "\t" + ct[i] + "\t" + ta[i] + "\t" + wt[i]);
         }
-        System.out.println("\naverage tat is " + (float)(avgta / n));
-        System.out.println("average wt is " + (float)(avgwt / n));
         
     }
 }
