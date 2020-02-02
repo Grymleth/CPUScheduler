@@ -34,7 +34,7 @@ public class SRT {
         avgwt = 0;
         avgta = 0;
         for (int i = 0; i < n; i++) {
-            pid[i] = i + 1;
+            pid[i] = i;
             at[i] = arrivalTime[i];
             System.out.println("Arrival time of process " + "\t\t" + (i + 1) + " = " + at[i]);
             bt[i] = burstTime[i];
@@ -70,7 +70,7 @@ public class SRT {
             int min = 99, c = n;
             gi = ganttBar.size();
             if (tot == n){
-                ganttBar.add(new Process(0, 0, c));
+                ganttBar.add(new Process(0, 0, prev_c));
                 ganttBar.get(gi).setCompletion(st);
                 ganttBar.get(gi).setBurst(ganttBar.get(gi).getCompletion()-ganttBar.get(gi-1).getCompletion());
                 break;
@@ -92,7 +92,7 @@ public class SRT {
                     
                 }
                 else{
-                    ganttBar.add(new Process(0, 0, c));
+                    ganttBar.add(new Process(0, 0, prev_c));
                     ganttBar.get(gi).setCompletion(st);
                     ganttBar.get(gi).setBurst(ganttBar.get(gi).getCompletion()-ganttBar.get(gi-1).getCompletion());
                 }

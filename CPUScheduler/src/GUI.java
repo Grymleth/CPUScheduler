@@ -355,7 +355,7 @@ public class GUI extends JFrame implements ActionListener{
                 tableModel.setValueAt(list[j], i, j);
             }
         }    
-        Collections.sort(schedule.processes, new SortByBurst());
+        Collections.sort(schedule.processes, new SortByCompletion());
         addChart(chartPanel, chartSp, schedule.processes);
     }
     
